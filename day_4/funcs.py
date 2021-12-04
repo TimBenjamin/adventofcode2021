@@ -1,9 +1,20 @@
 import re
 
+def getNumbers(filename):
+    with open(filename) as file:
+        line = file.readline().rstrip()
+        strings = line.split(",")
+        numbers = []
+        for s in strings:
+            numbers.append(int(s))
+    return numbers
+
 def getBoards(filename):
     boards = []
     board = []
     with open(filename) as file:
+        next(file)
+        next(file)
         lines = file.readlines()
         for line in lines:
             line = line.strip()
