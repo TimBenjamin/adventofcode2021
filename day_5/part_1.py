@@ -33,12 +33,9 @@ def run(filename):
 def doCoord(coord):
     global multiples
     global coords
-    if coord in coords:
-        coords[coord] += 1
-        if coords[coord] == 2:
-            multiples += 1
-    else:
-        coords[coord] = 1
+    coords[coord] = coords.get(coord, 0) + 1
+    if coords[coord] == 2:
+        multiples += 1
     
 
 run("input.txt")

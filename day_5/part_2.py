@@ -1,8 +1,9 @@
 
-coords = {}
-multiples = 0
+
 
 def run(filename):
+    coords = {}
+    multiples = 0
     with open(filename) as file:
         while (line := file.readline().rstrip()):
             cfrom, cto = line.split(" -> ")
@@ -44,18 +45,12 @@ def run(filename):
                     x_coords.append(x1)
             
             for i in range(len(x_coords)):
-                doCoord(str(x_coords[i]) + "," + str(y_coords[i]))
+                coord = str(x_coords[i]) + "," + str(y_coords[i])
+                coords[coord] = coords.get(coord, 0) + 1
+                if coords[coord] == 2:
+                    multiples += 1
+    
+    return multiples
 
-def doCoord(coord):
-    global multiples
-    global coords
-    if coord in coords:
-        coords[coord] += 1
-        if coords[coord] == 2:
-            multiples += 1
-    else:
-        coords[coord] = 1
-
-
-run("input.txt")
+multiples = run("input.txt")
 print(multiples)
