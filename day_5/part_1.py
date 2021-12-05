@@ -1,6 +1,5 @@
 
-coords = set()
-seenCoords = set()
+coords = {}
 multiples = 0
 
 def run(filename):
@@ -35,12 +34,12 @@ def doCoord(coord):
     global multiples
     global coords
     if coord in coords:
-        if coord not in seenCoords:
+        coords[coord] += 1
+        if coords[coord] == 2:
             multiples += 1
-            seenCoords.add(coord)
     else:
-        coords.add(coord)
-
+        coords[coord] = 1
+    
 
 run("input.txt")
 print(multiples)
