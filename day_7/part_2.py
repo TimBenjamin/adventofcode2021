@@ -1,5 +1,5 @@
 
-from statistics import mode, mean
+from statistics import mean
 from math import ceil
 
 with open("input.txt") as file:
