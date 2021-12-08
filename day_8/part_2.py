@@ -37,39 +37,35 @@ with open("input.txt") as file:
         output = output.split(" ")
         # these are jumbled, easier if they are alphabetical
         for s in range(len(signals)):
-            segments = sorted(set(signals[s]))
-            signals[s] = "".join(segments)
+            signals[s] = set(signals[s])
         for o in range(len(output)):
-            segments = sorted(set(output[o]))
-            output[o] = "".join(segments)
+            output[o] = set(output[o])
         
         decoded = {}
 
-        for signal in signals:
-            segments = sorted(set(signal))
+        for segments in signals:
             l = len(segments)
             if l == 2:
-                decoded[1] = "".join(segments)
+                decoded[1] = segments
             elif l == 4:
-                decoded[4] = "".join(segments)
+                decoded[4] = segments
             elif l == 3:
-                decoded[7] = "".join(segments)
+                decoded[7] = segments
             elif l == 7:
-                decoded[8] = "".join(segments)
+                decoded[8] = segments
 
         # of the len=5 [2,3,5], only 3 has both c and f
-        cf = set(decoded[1])
-        for signal in signals:
-            if len(signal) == 5:
-                segments = set(signal)
+        cf = decoded[1]
+        for segments in signals:
+            if len(segments) == 5:
                 if len(segments - cf) == 3:
-                    decoded[3] = signal
+                    decoded[3] = segments
                     break
         
         # 2 is the only char that does not have an f
         # 1 has a c and f
         candidates = []
-        cf = decoded[1]
+        cf = list(decoded[1])
         for signal in signals:
             if cf[0] in signal:
                 if cf[1] not in signal:
@@ -85,18 +81,20 @@ with open("input.txt") as file:
         # char in 6 but not in 5 is e
         for c in candidates:
             if len(c) == 5:
-                if len(set(decoded[6]) - set(c)) == 1:
+                if len(decoded[6] - c) == 1:
                     decoded[5] = c
                 else:
                     decoded[2] = c
         
         # 0 has g, 9 has dg
         # 3 - 7 = dg
-        candidates = set(signals) - set(decoded.values())
-        dg = set(decoded[3]) - set(decoded[7])
-        for c in candidates:
+        #candidates = signals - decoded.values()
+        dg = decoded[3] - decoded[7]
+        for c in signals:
+            if c in decoded.values():
+                continue
             if c != decoded[6]:
-                if len(set(c) - dg) == 5:
+                if len(c - dg) == 5:
                     decoded[0] = c
                 else:
                     decoded[9] = c
