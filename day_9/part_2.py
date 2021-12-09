@@ -53,8 +53,7 @@ def fillBasin(heightmap, basin):
         adjacents = getAdjacentPoints(heightmap, p[0], p[1])
         for a in adjacents:
             new_basin.add(tuple(a))
-    basin = new_basin.copy()
-    return basin
+    return new_basin
 
 def getBasin(heightmap, i, j):
     basin = set()
@@ -74,7 +73,7 @@ def getBasin(heightmap, i, j):
         new_basin = fillBasin(heightmap, basin)
         if len(new_basin) == len(basin):
             break
-        basin = new_basin.copy()
+        basin = new_basin
     return basin
 
 basinSizes = []
