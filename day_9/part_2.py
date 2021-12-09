@@ -81,5 +81,5 @@ for i, j, point in minima:
     basin = getBasin(heightmap, i, j)
     basinSizes.append(len(basin))
 
-revSort = sorted(basinSizes)[::-1]
-print(revSort[0] * revSort[1] * revSort[2])
+revSort = sorted(basinSizes)
+print(revSort[-3] * revSort[-2] * revSort[-1])
