@@ -40,17 +40,10 @@ def updateRoutes(routes):
                 dest = "".join(conn.difference({source}))
                 if dest == "start":
                     continue
-                else:
-                    if dest == "end":
-                        newRoute = route.copy()
-                        newRoute.append(dest)
-                        newRoutes.append(newRoute)
-                    elif visitCheckOK(dest, route):
-                        newRoute = route.copy()
-                        newRoute.append(dest)
-                        newRoutes.append(newRoute)
-                    else:
-                        pass
+                elif dest == "end" or visitCheckOK(dest, route):
+                    newRoute = route.copy()
+                    newRoute.append(dest)
+                    newRoutes.append(newRoute)
                     
     return newRoutes
 
