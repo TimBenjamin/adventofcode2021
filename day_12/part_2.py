@@ -12,13 +12,6 @@ for conn in connections:
         dest = "".join(conn.difference({"start"}))
         routes.append(["start", dest])
 
-def getVisited(route):
-    visited = set()
-    for r in route:
-        if r.lower() == r:
-            visited.add(r)
-    return visited
-
 def visitCheckOK(dest, route):
     if dest.lower() != dest:
         return True 
@@ -38,7 +31,6 @@ def visitCheckOK(dest, route):
 def updateRoutes(routes):
     newRoutes = []
     for route in routes:
-        visited = getVisited(route)
         source = route[len(route)-1]
         if source == "end":
             newRoutes.append(route)
