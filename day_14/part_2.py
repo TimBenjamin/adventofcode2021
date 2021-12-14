@@ -8,7 +8,7 @@ with open("input.txt") as file:
         pair = line.split(" -> ")
         rules[pair[0]] = pair[1]
 
-print("initial template:", template)
+#print("initial template:", template)
 
 adds = {} # will contain the letters that are going to be added, plus the initial letters
 # starting with the template:
@@ -17,7 +17,7 @@ for t in list(template):
         adds[t] += 1
     else:
         adds[t] = 1
-print("adds:", adds)
+#print("adds:", adds)
 
 # set up the initial pairs for expansion
 bits = []
@@ -28,13 +28,16 @@ for i in range(len(template)-1):
 # set up a tally of how many of each pair we have
 tally = {}
 for bit in bits:
-    tally[bit] = 1
+    if bit in tally:
+        tally[bit] += 1
+    else:
+        tally[bit] = 1
 
-print("template: ", template)
-print("initial tally:", tally)
+#print("template: ", template)
+#print("initial tally:", tally)
 
 # each step
-steps = 10
+steps = 40
 for step in range(steps):
     #print("step:", step+1)
     bits = {}
@@ -71,14 +74,9 @@ for step in range(steps):
             tally[p2] = bitcount
         #print("  = ", tally)
 
-print("adds:", adds)
+#print("adds:", adds)
 scores = sorted(list(adds.values()))
 scores.reverse()
-print("sorted scores:", scores)
-# test scores:
-# B: 1749, N: 865, C: 298, H:161 
-
+#print("sorted scores:", scores)
 
 print(scores[0] - scores[len(scores)-1])
-exit()
-
