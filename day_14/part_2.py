@@ -8,58 +8,59 @@ with open("input.txt") as file:
         pair = line.split(" -> ")
         rules[pair[0]] = pair[1]
 
-tally = {}
-steps = 10
+print("initial template:", template)
 
-# setup
-removes = {}
+adds = {} # will contain the letters that are going to be added, plus the initial letters
+# starting with the template:
+for t in list(template):
+    if t in adds:
+        adds[t] += 1
+    else:
+        adds[t] = 1
+print("adds:", adds)
+
+# set up the initial pairs for expansion
 bits = []
 for i in range(len(template)-1):
     bit = template[i:i+2]
-    #print(" bit: ", bit)
     bits.append(bit)
-    if i < len(template)-2:
-        #print(" remove: ", bit[1])
-        if bit[1] in removes:
-            removes[bit[1]] = removes[bit[1]] + 1
-        else:
-            removes[bit[1]] = 1
 
-for i, bit in enumerate(bits):
+# set up a tally of how many of each pair we have
+tally = {}
+for bit in bits:
     tally[bit] = 1
 
 print("template: ", template)
 print("initial tally:", tally)
-print("removes: ", removes)
 
 # each step
+steps = 10
 for step in range(steps):
     #print("step:", step+1)
     bits = {}
-    # first I'm making a copy of tally so I can iterate it while tally changes
-    # (and removing the zero values)
+    # "bits" is the dict of pairs from the last step's tally that are going to be expanded this round
     for bit in tally:
-        if tally[bit] > 0: 
-            bits[bit] = tally[bit]
+        bits[bit] = tally[bit]
     #print("bits:", bits)
-    #print("tally:", tally)
     
+    tally = {} # keep track of what pairs we are expanding this round
     for bit in bits:
-        bitcount = bits[bit]
-        tally[bit] -= bitcount # remove the last round's pairs
-        triplet = bit[0]+rules[bit]+bit[1] # generate the new pairs
-        # log the "doubled" letter AA -> AB, BA : remove a B
-        # BUG HERE
-        # I'm taking off too many
-        if rules[bit] in removes:
-            removes[rules[bit]] += bitcount
+        bitcount = bits[bit] # how many of this pair there are
+        add = rules[bit]
+        triplet = bit[0] + add + bit[1] # expand the pair, i.e. add a new letter to template
+        
+        # log the letter that we added:
+        if add in adds:
+            adds[add] += bitcount
         else:
-            removes[rules[bit]] = bitcount
+            adds[add] = bitcount
     
+        # record which pairs are now to be expanded next round
         p1 = triplet[0:2]
         p2 = triplet[1:]
         #print(bit)
-        #print(" -> ", p1, p2)
+        #print(" -> ", p1, p2, "x", bitcount)
+        #print("adds", adds)
         if p1 in tally:
             tally[p1] += bitcount
         else:
@@ -70,25 +71,8 @@ for step in range(steps):
             tally[p2] = bitcount
         #print("  = ", tally)
 
-print("final tally:",tally)
-letters = {}
-for bit in tally.keys():
-    if tally[bit] > 0:
-        if bit[0] in letters:
-            letters[bit[0]] += tally[bit]
-        else:
-            letters[bit[0]] = tally[bit]
-        if bit[1] in letters:
-            letters[bit[1]] += tally[bit]
-        else:
-            letters[bit[1]] = tally[bit]
-
-print("letters: ", letters)
-for r in removes:
-    letters[r] -= removes[r]
-print(" after removing spares:", letters)
-
-scores = sorted(list(letters.values()))
+print("adds:", adds)
+scores = sorted(list(adds.values()))
 scores.reverse()
 print("sorted scores:", scores)
 # test scores:
@@ -97,8 +81,4 @@ print("sorted scores:", scores)
 
 print(scores[0] - scores[len(scores)-1])
 exit()
-
-#print("most common is: "+most+" with count: ", most_count)
-#print("least common is: "+least+" with count: ", least_count)
-#print(most_count - least_count)
 
