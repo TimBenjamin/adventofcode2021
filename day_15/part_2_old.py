@@ -1,8 +1,6 @@
-from datetime import date, datetime
-
 small = []
 levels = []
-with open("input.txt") as file:
+with open("test_input.txt") as file:
     while line := file.readline().strip():
         line_str = list(line)
         nums = list(map(int, line_str))
@@ -63,14 +61,15 @@ countAdded = 1
 while True: # break out when we add 
     # a)
     added = False
-    t1 = datetime.now()
-    countAdded += 1
     for p in points:
         #if points[p]["distance"] is not None and p not in sptset:
         if points[p]["distance"] is not None and points[p]["in_sptset"] is False:
             # b)
             #sptset.add(p)
             points[p]["in_sptset"] = True
+            countAdded += 1
+            if countAdded % 100 == 0:
+                print("count:",countAdded)
             added = True
             break
     if added:
@@ -86,9 +85,5 @@ while True: # break out when we add
         # 3) While sptSet doesn’t include all vertices 
         # nothing left to add
         break
-    if countAdded % 100 == 0:
-        t2 = datetime.now()
-        t3 = t2 - t1
-        print(t3)
     
 print(points[dest]["distance"])

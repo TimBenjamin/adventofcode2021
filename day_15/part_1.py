@@ -1,5 +1,5 @@
 levels = []
-with open("input.txt") as file:
+with open("test_input.txt") as file:
     while line := file.readline().strip():
         line_str = list(line)
         levels.append(list(map(int, line_str)))

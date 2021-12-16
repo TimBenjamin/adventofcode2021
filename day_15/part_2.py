@@ -1,6 +1,8 @@
+from datetime import date, datetime
+
 small = []
 levels = []
-with open("test_input.txt") as file:
+with open("input.txt") as file:
     while line := file.readline().strip():
         line_str = list(line)
         nums = list(map(int, line_str))
@@ -57,23 +59,27 @@ points[source]["distance"] = 0
 # ….a) Pick a vertex u which is not there in sptSet and has a minimum distance value. 
 # ….b) Include u to sptSet. 
 # ….c) Update distance value of all adjacent vertices of u. To update the distance values, iterate through all adjacent vertices. For every adjacent vertex v, if the sum of distance value of u (from source) and weight of edge u-v, is less than the distance value of v, then update the distance value of v. 
+pointsWithDistance = {}
+pointsWithDistance[source] = points[source]
 countAdded = 1
 while True: # break out when we add 
     # a)
-    added = False
-    a = 0
-    for p in points:
-        #if points[p]["distance"] is not None and p not in sptset:
-        if points[p]["distance"] is not None and points[p]["in_sptset"] is False:
-            # b)
-            #sptset.add(p)
-            points[p]["in_sptset"] = True
-            countAdded += 1
-            if countAdded % 100 == 0:
-                print("a:",a)
-            added = True
-            break
-    if added:
+    m = 100000000
+    selectedPoint = None
+    for p in pointsWithDistance:
+        if points[p]["in_sptset"] is False and points[p]["distance"] < m:
+            selectedPoint = p
+            m = points[p]["distance"]
+
+    if selectedPoint is not None:
+        p = selectedPoint
+        # b)
+        #sptset.add(p)
+        points[p]["in_sptset"] = True
+        countAdded += 1
+        if countAdded % 100 == 0:
+            print("count:",countAdded)
+            print("size of pointsWithDistance:", len(pointsWithDistance))
         # c)
         # To update the distance values, iterate through all adjacent vertices. 
         for adj in points[p]["neighbours"]:
@@ -82,6 +88,7 @@ while True: # break out when we add
             uv_edge_weight = levels[adj[0]][adj[1]]
             if points[adj]["distance"] is None or u_dist + uv_edge_weight < points[adj]["distance"]:
                 points[adj]["distance"] = levels[adj[0]][adj[1]] + points[p]["distance"]
+                pointsWithDistance[adj] = points[adj]
     else:
         # 3) While sptSet doesn’t include all vertices 
         # nothing left to add
