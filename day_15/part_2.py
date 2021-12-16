@@ -61,7 +61,6 @@ points[source]["distance"] = 0
 # ….c) Update distance value of all adjacent vertices of u. To update the distance values, iterate through all adjacent vertices. For every adjacent vertex v, if the sum of distance value of u (from source) and weight of edge u-v, is less than the distance value of v, then update the distance value of v. 
 pointsWithDistance = {}
 pointsWithDistance[source] = points[source]
-countAdded = 1
 while True: # break out when we add 
     # a)
     m = 100000000
@@ -76,10 +75,8 @@ while True: # break out when we add
         # b)
         #sptset.add(p)
         points[p]["in_sptset"] = True
-        countAdded += 1
-        if countAdded % 100 == 0:
-            print("count:",countAdded)
-            print("size of pointsWithDistance:", len(pointsWithDistance))
+        # this point is no longer needed in pointsWithDistance
+        del pointsWithDistance[p]
         # c)
         # To update the distance values, iterate through all adjacent vertices. 
         for adj in points[p]["neighbours"]:
