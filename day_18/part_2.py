@@ -32,7 +32,7 @@ def processFish(fish):
             # hopefully the next two elements are just numbers in the pair...
             pair.append(fish.pop(0))
             pair.append(fish.pop(0))
-            print(" --> explode pair: ", pair)
+            #print(" --> explode pair: ", pair)
             # the pair's left value is added to the first regular number to the left of the exploding pair (if any)
             for k, v in reversed(list(enumerate(newFish))):
                 if isinstance(v, int):
@@ -61,7 +61,7 @@ def processFish(fish):
         i = fish.pop(0)
         if isinstance(i, int) and i > 9:
             # do split
-            print(" --> split: ", i)
+            #print(" --> split: ", i)
             # replace it with a pair
             # the left element of the pair should be the regular number divided by two and rounded down
             # the right element of the pair should be the regular number divided by two and rounded up.
@@ -96,16 +96,16 @@ def packet(fish):
 
 def findus(input):
     fish = parseInput(input)
-    print(">>> ", packet(fish.copy()))
+    #print(">>> ", packet(fish.copy()))
     while True:
         s = len(fish)
         finger = processFish(fish)
         if len(finger) == s:
             break
         else:
-            print("    ", packet(finger.copy()))
+            #print("    ", packet(finger.copy()))
             fish = finger
-    print("<<< ", packet(finger.copy()))
+    #print("<<< ", packet(finger.copy()))
     return packet(finger)
 
 def getMagnitude(input):
@@ -139,39 +139,31 @@ def getMagnitude(input):
             return newFish[0]
         fish = newFish
 
-
-# test cases for explode:
-input = "[[[[[9,8],1],2],3],4]" # pass
-input = "[7,[6,[5,[4,[3,2]]]]]" # pass
-input = "[[6,[5,[4,[3,2]]]],1]" # pass
-input = "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]" # pass
-input = "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]" # pass
-
-# test cases for split:
-input = "[[[[0,7],4],[15,[0,13]]],[1,1]]" # pass
-input = "[[[[0,7],4],[[7,8],[0,13]]],[1,1]]" # pass
-
-# multi step test case:
-input = "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]" # pass
-
-# test cases for calculating magnitude:
-input = "[9,1]" # pass
-input = "[[9,1],[1,9]]" # pass
-input = "[[1,2],[[3,4],5]]" # pass
-input = "[[[[0,7],4],[[7,8],[6,0]]],[8,1]]" # pass
-input = "[[[[1,1],[2,2]],[3,3]],[4,4]]" # pass
-input = "[[[[3,0],[5,3]],[4,4]],[5,5]]" # pass
-input = "[[[[5,0],[7,4]],[5,5]],[6,6]]" # pass
-input = "[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]" # pass
-
-input = sys.stdin.readline().strip()
+maxMag = 0
+inputs = []
 while line := sys.stdin.readline().strip():
-    input = "[" + input + "," + line + "]"
-    input = findus(input)
+    inputs.append(line)
 
-print("Final:", input)
+print("inputs: ", inputs)
 
-magnitude = getMagnitude(input)
-print("Magnitude is:", magnitude)
+for i, x in enumerate(inputs):
+    for j, y in enumerate(inputs):
+        if i == j:
+            continue
+        captain = "[" + x + "," + y + "]"
+        birdseye = findus(captain)
+        magnitude = getMagnitude(birdseye)
+        if magnitude > maxMag:
+            maxMag = magnitude
+        print("x: " + x + "   plus y: " + y + "   = " + str(magnitude))
+
+        captain = "[" + y + "," + x + "]"
+        birdseye = findus(captain)
+        magnitude = getMagnitude(birdseye)
+        if magnitude > maxMag:
+            maxMag = magnitude
+        print("y: " + y + "   plus x: " + x + "   = " + str(magnitude))
+
+print("Max magnitude is:", maxMag)
 
 
