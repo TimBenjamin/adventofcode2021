@@ -158,17 +158,17 @@ input = "[[[[3,0],[5,3]],[4,4]],[5,5]]" # pass
 input = "[[[[5,0],[7,4]],[5,5]],[6,6]]" # pass
 input = "[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]" # pass
 
-# input = sys.stdin.readline().strip()
-# while line := sys.stdin.readline().strip():
-#     input = "[" + input + "," + line + "]"
-#     input = findus(input)
+input = sys.stdin.readline().strip()
+while line := sys.stdin.readline().strip():
+    input = "[" + input + "," + line + "]"
+    input = findus(input)
 
-# print("Final:", input)
+print("Final:", input)
 
-# this case is going wrong
-input = "[[[[4,0],[5,4]],[[7,7],[6,0]]],[[7[5,5]],[[0[11,3]],[[6,3],[8,8]]]]]"
-input = findus(input)
-print("Final: ", input)
+# this case in test_input.txt is going wrong
+# input = "[[[[4,0],[5,4]],[[7,7],[6,0]]],[[7[5,5]],[[0[11,3]],[[6,3],[8,8]]]]]"
+# input = findus(input)
+# print("Final: ", input)
 
 magnitude = getMagnitude(input)
 print("Magnitude is:", magnitude)
