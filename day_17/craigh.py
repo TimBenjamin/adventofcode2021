@@ -1,0 +1,1 @@
+import sys; print(sum(range(abs(int(next(sys.stdin).strip().split(" ", 3)[3][2:].split(".", 2)[0])))))
