@@ -1,0 +1,94 @@
+x,y,z    ->  x,-z,y   ->  x,-y,-z   ->  x,z,-y
+-x,y,z   ->  -x,-z,y   ->  -x,-y,-z   ->  -x,z,-y
+
+x,-y,z   ->  x,z,y    ->  x,y,-z    ->  x,-z,-y
+-x,-y,z  ->  -x,z,y   ->  -x,y,-z   ->  -x,-z,-y
+
+x,-y,-z   ->  x,-z,y   ->  x,y,z   ->  x,z,-y
+-x,-y,-z  ->  -x,-z,y  ->  -x,y,z  ->  -x,z,-y
+
+A A A
+B A A
+A B A
+A A B
+B B A
+B A B
+A B B
+B B B
+
+
+
+A B C
+a B C
+A b C
+A B c
+a b C
+a B c
+A b c
+a b c
+
+A C B
+a C B
+A c B
+A C b
+a c B
+a C b
+A c b
+a c b
+
+B A C
+b A C
+B a C
+B A c
+c a B
+c A b
+C a b
+c a b
+
+
+rotations[0].append((x,y,z))
+rotations[1].append((-x,y,z))
+rotations[2].append((x,-y,z))
+rotations[3].append((x,y,-z))
+rotations[4].append((-x,-y,z))
+rotations[5].append((-x,y,-z))
+rotations[6].append((x,-y,-z))
+rotations[7].append((-x,-y,-z))
+rotations[8].append((x,z,y))
+rotations[9].append((-x,z,y))
+rotations[10].append((x,-z,y))
+rotations[11].append((x,z,-y))
+rotations[12].append((-x,-z,y))
+rotations[13].append((-x,z,-y))
+rotations[14].append((x,-z,-y))
+rotations[15].append((-x,-z,-y))
+rotations[16].append((y,x,z))
+rotations[17].append((-y,x,z))
+rotations[18].append((y,-x,z))
+rotations[19].append((y,x,-z))
+rotations[20].append((-z,-x,y))
+rotations[21].append((-z,x,-y))
+rotations[22].append((z,-x,-y))
+rotations[23].append((-z,-x,-y))
+
+Rotate each of these around X: perform (x, -z, y)
+x,y,z
+-x,y,-z
+
+x,-z,y
+x,-y,-z
+x,z,y
+
+-x,z,y
+-x,-y,z
+-x,-z,y
+
+Rotate each of these around Y: (-z, y, x)
+-y,x,z
+y,-x,z
+
+
+
+Rotate each of these around Z: (y, -x, z)
+-z,y,x
+z,y,-x
