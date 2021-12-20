@@ -23,7 +23,7 @@ def padImage(image, padChar):
 def printImage(image):
     for row in image:
         row = "".join(row)
-        print(row.replace("1","#").replace("0","."))
+        print(row.replace("1","#").replace("0"," "))
     print()
 
 def getBlank(image):
@@ -66,3 +66,10 @@ for row in image:
         if cell == "1":
             count += 1
 print(count)
+
+# strip empty space and print the final image
+# strip = 150
+# newImage = image[strip:len(image)-strip]
+# for i, row in enumerate(newImage):
+#     newImage[i] = row[strip:len(row)-strip]
+# printImage(newImage)
