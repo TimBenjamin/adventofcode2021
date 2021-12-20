@@ -92,3 +92,67 @@ y,-x,z
 Rotate each of these around Z: (y, -x, z)
 -z,y,x
 z,y,-x
+
+
+## new attempt ##
+
+# Start:
+x,y,z
+# keep Z pointing up:
+y,-x,z
+-x,-y,z
+-y,x,z
+# upside down:
+x,-y,-z
+-y,-x,-z
+-x,y,-z
+y,x,-z
+
+# X in up position:
+z,y,-x
+z,x,y
+z,-y,x
+z,-x,-y
+# X in down position:
+-z,x,-y
+-z,-y,-x
+-z,-x,y
+-z,y,x
+
+# Y in up position:
+y,z,x
+x,z,-y
+-y,z,-y
+-x,z,-y
+# Y in down position:
+x,-z,y
+-y,-z,x
+-x,-z,-y
+y,-z,-x
+
+
+rotations[0].append((x,y,z))
+rotations[1].append((y,-x,z))
+rotations[2].append((-x,-y,z))
+rotations[3].append((-y,x,z))
+rotations[4].append((x,-y,-z))
+rotations[5].append((-y,-x,-z))
+rotations[6].append((-x,y,-z))
+rotations[7].append((y,x,-z))
+rotations[8].append((z,y,-x))
+rotations[9].append((z,x,y))
+rotations[10].append((z,-y,x))
+rotations[11].append((z,-x,-y))
+rotations[12].append((-z,x,-y))
+rotations[13].append((-z,-y,-x))
+rotations[14].append((-z,-x,y))
+rotations[15].append((-z,y,x))
+rotations[16].append((y,z,x))
+rotations[17].append((x,z,-y))
+rotations[18].append((-y,z,-y))
+rotations[19].append((-x,z,-y))
+rotations[20].append((x,-z,y))
+rotations[21].append((-y,-z,x))
+rotations[22].append((-x,-z,-y))
+rotations[23].append((y,-z,-x))
+
