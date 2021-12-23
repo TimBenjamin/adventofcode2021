@@ -183,7 +183,7 @@ def doMove(s, f, moves, energy, state):
     cost = costs[state[f]] * d
     energy += cost
     moves.append([s,f])
-    #print(s + "(" + state[f] + ") moved to " + f + " at a cost of " + str(cost))
+    print(s + "(" + state[f] + ") moved to " + f + " at a cost of " + str(cost))
     return moves, energy
 
 def checkLegal(s, f, state):
@@ -293,7 +293,10 @@ def blocked(s, f, state):
     return False
 
 def playGame(moves, energy, state):
-    global winningGames, places, minEnergy, steps
+    global winningGames, places, minEnergy, steps, cache
+    if str(state) in cache:
+        print("already seen this game, it ends badly")
+        return False
     for s in places: # s = start, where we are moving from
         for f in places: # f = finish, where we are moving to
             if s == f: continue
@@ -321,16 +324,18 @@ def playGame(moves, energy, state):
                         return True
                     else:
                         state = previousState
-                        continue
-        #print(s + "(" + state[s] + ") cannot move")
+                        return playGame(moves, energy, state)
+                        
+        print(s + "(" + state[s] + ") cannot move")
     
     # I think this is a gridlock situation if we've fallen through
-    #visualise(state)
-    if steps > 4:
-        print("failed after " + str(steps) + " steps")
+    visualise(state)
+    cache.add(str(state))
+    print("failed after " + str(steps) + " steps")
     steps = 0
     return False
 
+cache = set()
 winningGames = []
 numGames = 0
 minEnergy = 1000000
