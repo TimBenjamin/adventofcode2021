@@ -121,7 +121,7 @@ def getInitialState():
         "A0": "D",
         "A1": "D",
         "A2": "D",
-        "A3": "D",
+        "A3": "C",
         "B0": "B",
         "B1": "C",
         "B2": "B",
@@ -133,7 +133,7 @@ def getInitialState():
         "D0": "A",
         "D1": "A",
         "D2": "C",
-        "D3": "C",
+        "D3": "B",
         "H0": ".",
         "H1": ".",
         "H3": ".",
@@ -173,8 +173,8 @@ def isComplete(state):
         return True
     return False
 
-def doMove(s, f, moves):
-    global distances, state, places, energy, costs
+def doMove(s, f, moves, energy, state):
+    global distances, places, costs
     # s:C0 moves to f:H1
     state[f] = state[s]
     state[s] = "."
@@ -185,11 +185,10 @@ def doMove(s, f, moves):
     cost = costs[state[f]] * d
     energy += cost
     moves.append([s,f])
-    print(s + " moved to " + f + " at a cost of " + str(cost))
-    return moves
+    print(s + "(" + state[f] + ") moved to " + f + " at a cost of " + str(cost))
+    return moves, energy
 
-def checkLegal(s, f):
-    global state
+def checkLegal(s, f, state):
     # can't move nothing:
     if state[s] == ".": return False
     # can't move to an occupied space:
@@ -209,83 +208,100 @@ def checkLegal(s, f):
     if s == "D3" and state["D2"] != ".": return False
     # no hall to hall moves allowed
     if s.startswith("H") and f.startswith("H"): return False
-    # otherwise I can move into a hallway:
-    if f.startswith("H"): return True
     # I can't move into a column that isn't my own:
-    if state[s] == "A" and not f.startswith("A"): return False
-    if state[s] == "B" and not f.startswith("B"): return False
-    if state[s] == "C" and not f.startswith("C"): return False
-    if state[s] == "D" and not f.startswith("D"): return False
+    if state[s] == "A" and not f.startswith("A") and not f.startswith("H"): return False
+    if state[s] == "B" and not f.startswith("B") and not f.startswith("H"): return False
+    if state[s] == "C" and not f.startswith("C") and not f.startswith("H"): return False
+    if state[s] == "D" and not f.startswith("D") and not f.startswith("H"): return False
     # from a column, I can only move into the hall:
     if (s.startswith("A") or s.startswith("B") or s.startswith("C") or s.startswith("D")) and not f.startswith("H"): return False
     # is there anything blocking my way into a hall location?
     if (s.startswith("A") or s.startswith("B") or s.startswith("C") or s.startswith("D")) and f.startswith("H"):
-        if checkBlocked(s, f):
+        if blocked(s, f, state):
             return False
+    # if I'm an A and I'm in the A column and there is nothing below me that's not an A, stay put
+    if s.startswith("A") and state[s] == "A" and state["A0"] == "A" and (state["A1"] == "A" or state["A1"] == ".") and (state["A2"] == "A" or state["A2"] == ".") and (state["A3"] == "A" or state["A3"] == "."): return False
+    if s.startswith("B") and state[s] == "B" and state["B0"] == "B" and (state["B1"] == "B" or state["B1"] == ".") and (state["B2"] == "B" or state["B2"] == ".") and (state["B3"] == "B" or state["B3"] == "."): return False
+    if s.startswith("C") and state[s] == "C" and state["C0"] == "C" and (state["C1"] == "C" or state["C1"] == ".") and (state["C2"] == "C" or state["C2"] == ".") and (state["C3"] == "C" or state["C3"] == "."): return False
+    if s.startswith("D") and state[s] == "D" and state["D0"] == "D" and (state["D1"] == "D" or state["D1"] == ".") and (state["D2"] == "D" or state["D2"] == ".") and (state["D3"] == "D" or state["D3"] == "."): return False
     # anything else is OK:
     return True
 
-def checkBlocked(s, f):
-    global state
+def blocked(s, f, state):
     # s will be a column and f will be a hallway place
     assert((s.startswith("A") or s.startswith("B") or s.startswith("C") or s.startswith("D")) and f.startswith("H"))
     if s.startswith("A"):
-        if f == "H0" and state["H1"] != ".": return False
-        if f == "H5" and state["H3"] != ".": return False
-        if f == "H7" and state["H3"] != "." and state["H5"] != ".": return False
-        if f == "H9" and state["H3"] != "." and state["H5"] != "." and state["H7"] != ".": return False
-        if f == "H10" and state["H3"] != "." and state["H5"] != "." and state["H7"] != "." and state["H9"] != ".": return False
+        print("s:",s)
+        print("f:",f)
+        print(state)
+        if f == "H0" and state["H1"] != ".": return True
+        elif f == "H5" and state["H3"] != ".": return True
+        elif f == "H7" and (state["H3"] != "." or state["H5"] != "."): return True
+        elif f == "H9" and (state["H3"] != "." or state["H5"] != "." or state["H7"] != "."): return True
+        elif f == "H10" and (state["H3"] != "." or state["H5"] != "." or state["H7"] != "." or state["H9"] != "."): return True
     elif s.startswith("B"):
-        if f == "H0" and state["H3"] != "." and state["H1"] != ".": return False
-        if f == "H1" and state["H3"] != ".": return False
-        if f == "H7" and state["H5"] != ".": return False
-        if f == "H9" and state["H5"] != "." and state["H7"] != ".": return False
-        if f == "H10" and state["H5"] != "." and state["H7"] != "." and state["H9"] != ".": return False
+        if f == "H0" and (state["H3"] != "." or state["H1"] != "."): return True
+        elif f == "H1" and state["H3"] != ".": return True
+        elif f == "H7" and state["H5"] != ".": return True
+        elif f == "H9" and (state["H5"] != "." or state["H7"] != "."): return True
+        elif f == "H10" and (state["H5"] != "." or state["H7"] != "." or state["H9"] != "."): return True
     elif s.startswith("C"):
-        if f == "H0" and state["H5"] != "." and state["H3"] != "." and state["H1"] != ".": return False
-        if f == "H1" and state["H5"] != "." and state["H3"] != ".": return False
-        if f == "H3" and state["H5"] != ".": return False
-        if f == "H9" and state["H7"] != ".": return False
-        if f == "H10" and state["H7"] != "." and state["H9"] != ".": return False
+        if f == "H0" and (state["H5"] != "." or state["H3"] != "." or state["H1"] != "."): return True
+        elif f == "H1" and (state["H5"] != "." or state["H3"] != "."): return True
+        elif f == "H3" and state["H5"] != ".": return True
+        elif f == "H9" and state["H7"] != ".": return True
+        elif f == "H10" and (state["H7"] != "." or state["H9"] != "."): return True
     elif s.startswith("D"):
-        if f == "H0" and state["H7"] != "." and state["H5"] != "." and state["H3"] != "." and state["H1"] != ".": return False
-        if f == "H1" and state["H7"] != "." and state["H5"] != "." and state["H3"] != ".": return False
-        if f == "H3" and state["H7"] != "." and state["H5"] != ".": return False
-        if f == "H5" and state["H7"] != ".": return False
-        if f == "H10" and state["H9"] != ".": return False
-    return True
+        if f == "H0" and (state["H7"] != "." or state["H5"] != "." or state["H3"] != "." or state["H1"] != "."): return True
+        elif f == "H1" and (state["H7"] != "." or state["H5"] != "." or state["H3"] != "."): return True
+        elif f == "H3" and (state["H7"] != "." or state["H5"] != "."): return True
+        elif f == "H5" and state["H7"] != ".": return True
+        elif f == "H10" and state["H9"] != ".": return True
+    return False
 
-energy = 0
+def playGame(moves, energy, state):
+    global winningGames, places, minEnergy
+    # BUG - this just runs the same game over and over...
+    while True:
+        moved = False
+        for s in places: # s = start, where we are moving from
+            for f in places: # f = finish, where we are moving to
+                if s == f: continue
+                # speed optimisation - if energy is already over minEnergy, don't bother carrying on!
+                # if energy > minEnergy:
+                #     print("energy is already too high")
+                #     return False
+                if checkLegal(s, f, state):
+                    moved = True
+                    moves, energy = doMove(s, f, moves, energy, state)
+                    #visualise(state)
+                    if isComplete(state):
+                        print("winning state found, total energy:", energy)
+                        winningGames.append({
+                            "moves": moves,
+                            "energy": energy
+                        })
+                        if energy < minEnergy:
+                            minEnergy = energy
+                        return True
+                else:
+                    moved = False
+            print(s + "(" + state[s] + ") cannot move")
+        
+        if not moved:
+            # game finished but was not complete
+            visualise(state)
+            print("That game ended in gridlock! try another")
+            return False
+
 winningGames = []
 numGames = 0
 minEnergy = 1000000
-while True:
-    # not sure how to break out, so will limit the number of games for now
-    if numGames == 4: break
-    numGames += 1
-    moves = []
-    state = getInitialState()
-    restart = False
-    # BUG - this just runs the same game over and over...
-    for s in places: # s = start, where we are moving from
-        if restart: break
-        for f in places: # f = finish, where we are moving to
-            if s == f: continue
-            if checkLegal(s,f):
-                moves = doMove(s, f, moves)
-                #visualise(state)
-                if isComplete(state):
-                    print("winning state found, total energy:", energy)
-                    winningGames.append({
-                        "moves":moves,
-                        "energy":energy
-                    })
-                    if energy < minEnergy:
-                        minEnergy = energy
-                    restart = True
-                    break
-    # game finished but was not complete
-    print("That game ended in gridlock! try another")
+moves = []
+energy = 0
+state = getInitialState()
+result = playGame(moves, energy, state)
+print(minEnergy)
     
 
 
