@@ -294,16 +294,14 @@ def blocked(s, f, state):
 
 def playGame(moves, energy, state):
     global winningGames, places, minEnergy, steps
-    moved = False
     for s in places: # s = start, where we are moving from
         for f in places: # f = finish, where we are moving to
             if s == f: continue
             # speed optimisation - if energy is already over minEnergy, don't bother carrying on!
-            # if energy > minEnergy:
-            #     print("energy is already too high")
-            #     return False
+            if energy > minEnergy:
+                print("energy is already too high")
+                return False
             if checkLegal(s, f, state):
-                moved = True
                 steps += 1
                 previousState = state.copy()
                 moves, energy = doMove(s, f, moves, energy, state)
@@ -326,17 +324,12 @@ def playGame(moves, energy, state):
                         continue
         #print(s + "(" + state[s] + ") cannot move")
     
-    if not moved:
-        # game finished but was not complete
-        #visualise(state)
-        #print("That game ended in gridlock after "+str(steps)+" steps! try another")
-        steps = 0
-        return False
-    else:
-        #print("what is this condition then?")
-        #visualise(state)
-        steps = 0
-        return False
+    # I think this is a gridlock situation if we've fallen through
+    #visualise(state)
+    if steps > 4:
+        print("failed after " + str(steps) + " steps")
+    steps = 0
+    return False
 
 winningGames = []
 numGames = 0
@@ -344,36 +337,36 @@ minEnergy = 1000000
 moves = []
 energy = 0
 steps = 0
-state = getInitialState()
-for s in places: # s = start, where we are moving from
-    for f in places: # f = finish, where we are moving to
-        if s == f: continue
-        if checkLegal(s, f, state):
-            print("starting a game with s: "+s+" and f: "+f)
-            moves, energy = doMove(s, f, moves, energy, state)
-            result = playGame(moves, energy, state)
-            numGames += 1
-            print("result of game " + str(numGames)+" was:", result)
-            state = getInitialState()
-        else:
-            #print("s f not legal:",s,f)
-            pass
-print(minEnergy)
-
-# starting a game with conditions I know lead to a win
-# s = D0 / f = H0
 # state = getInitialState()
-# s = "D0"
-# f = "H0"
-# if checkLegal(s, f, state):
-#     print("starting a game with s: "+s+" and f: "+f)
-#     moves, energy = doMove(s, f, moves, energy, state)
-#     result = playGame(moves, energy, state)
-#     numGames += 1
-#     print("result of game " + str(numGames)+" was:", result)
-# else:
-#     #print("s f not legal:",s,f)
-#     pass
+# for s in places: # s = start, where we are moving from
+#     for f in places: # f = finish, where we are moving to
+#         if s == f: continue
+#         if checkLegal(s, f, state):
+#             print("starting a game with s: "+s+" and f: "+f)
+#             moves, energy = doMove(s, f, moves, energy, state)
+#             result = playGame(moves, energy, state)
+#             numGames += 1
+#             print("result of game " + str(numGames)+" was:", result)
+#             state = getInitialState()
+#         else:
+#             #print("s f not legal:",s,f)
+#             pass
+# print(minEnergy)
+
+## starting a game with conditions I know lead to a win
+## s = D0 / f = H0
+state = getInitialState()
+s = "D0"
+f = "H0"
+if checkLegal(s, f, state):
+    print("starting a game with s: "+s+" and f: "+f)
+    moves, energy = doMove(s, f, moves, energy, state)
+    result = playGame(moves, energy, state)
+    numGames += 1
+    print("result of game " + str(numGames)+" was:", result)
+else:
+    #print("s f not legal:",s,f)
+    pass
 
 
                 
