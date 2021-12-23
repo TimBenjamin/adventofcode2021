@@ -183,7 +183,7 @@ def doMove(s, f, moves, energy, state):
     cost = costs[state[f]] * d
     energy += cost
     moves.append([s,f])
-    print(s + "(" + state[f] + ") moved to " + f + " at a cost of " + str(cost))
+    #print(s + "(" + state[f] + ") moved to " + f + " at a cost of " + str(cost))
     return moves, energy
 
 def checkLegal(s, f, state):
@@ -221,6 +221,14 @@ def checkLegal(s, f, state):
     if s.startswith("H"):
         if hallBlocked(s,f,state):
             return False
+    # if I'm in a hall location, trying to move to my column, but I can't if there's something in there it isn't the same as me
+    if s.startswith("H"):
+        if f.startswith("A") and (state["A3"] != "A" or state["A2"] != "A" or state["A1"] != "A"): return False
+        if f.startswith("B") and (state["B3"] != "B" or state["B2"] != "B" or state["B1"] != "B"): return False
+        if f.startswith("C") and (state["C3"] != "C" or state["C2"] != "C" or state["C1"] != "C"): return False
+        if f.startswith("D") and (state["D3"] != "D" or state["D2"] != "D" or state["D1"] != "D"): return False
+        #print("can't move into a column that contains an alien type")
+        return False
     # if I'm an A and I'm in the A column and there is nothing below me that's not an A, stay put
     if s.startswith("A") and state[s] == "A" and state["A0"] == "A" and (state["A1"] == "A" or state["A1"] == ".") and (state["A2"] == "A" or state["A2"] == ".") and (state["A3"] == "A" or state["A3"] == "."): return False
     if s.startswith("B") and state[s] == "B" and state["B0"] == "B" and (state["B1"] == "B" or state["B1"] == ".") and (state["B2"] == "B" or state["B2"] == ".") and (state["B3"] == "B" or state["B3"] == "."): return False
@@ -287,37 +295,36 @@ def blocked(s, f, state):
 def playGame(moves, energy, state):
     global winningGames, places, minEnergy
     # BUG - this just runs the same game over and over...
-    while True:
-        moved = False
-        for s in places: # s = start, where we are moving from
-            for f in places: # f = finish, where we are moving to
-                if s == f: continue
-                # speed optimisation - if energy is already over minEnergy, don't bother carrying on!
-                # if energy > minEnergy:
-                #     print("energy is already too high")
-                #     return False
-                if checkLegal(s, f, state):
-                    moved = True
-                    moves, energy = doMove(s, f, moves, energy, state)
-                    #visualise(state)
-                    if isComplete(state):
-                        print("winning state found, total energy:", energy)
-                        winningGames.append({
-                            "moves": moves,
-                            "energy": energy
-                        })
-                        if energy < minEnergy:
-                            minEnergy = energy
-                        return True
-                else:
-                    moved = False
-            print(s + "(" + state[s] + ") cannot move")
-        
-        if not moved:
-            # game finished but was not complete
-            visualise(state)
-            print("That game ended in gridlock! try another")
-            return False
+    moved = False
+    for s in places: # s = start, where we are moving from
+        for f in places: # f = finish, where we are moving to
+            if s == f: continue
+            # speed optimisation - if energy is already over minEnergy, don't bother carrying on!
+            # if energy > minEnergy:
+            #     print("energy is already too high")
+            #     return False
+            if checkLegal(s, f, state):
+                moved = True
+                moves, energy = doMove(s, f, moves, energy, state)
+                #visualise(state)
+                if isComplete(state):
+                    print("winning state found, total energy:", energy)
+                    winningGames.append({
+                        "moves": moves,
+                        "energy": energy
+                    })
+                    if energy < minEnergy:
+                        minEnergy = energy
+                    return True
+                return playGame(moves, energy, state)
+        #print(s + "(" + state[s] + ") cannot move")
+    
+    if not moved:
+        # game finished but was not complete
+        visualise(state)
+        print("That game ended in gridlock! try another")
+        return False
+    print("end of for, but still in while")
 
 winningGames = []
 numGames = 0
@@ -325,7 +332,19 @@ minEnergy = 1000000
 moves = []
 energy = 0
 state = getInitialState()
-result = playGame(moves, energy, state)
+for s in places: # s = start, where we are moving from
+    for f in places: # f = finish, where we are moving to
+        if s == f: continue
+        if checkLegal(s, f, state):
+            print("starting a game with s: "+s+" and f: "+f)
+            moves, energy = doMove(s, f, moves, energy, state)
+            result = playGame(moves, energy, state)
+            numGames += 1
+            print("result of game " + str(numGames)+" was:", result)
+            state = getInitialState()
+        else:
+            #print("s f not legal:",s,f)
+            pass
 print(minEnergy)
     
 
