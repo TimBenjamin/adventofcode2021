@@ -153,7 +153,6 @@ costs = {
 }
 
 def visualise(state):
-    global energy
     print("#############")
     print("#"+state["H0"]+state["H1"]+"."+state["H3"]+"."+state["H5"]+"."+state["H7"]+"."+state["H9"]+state["H10"]+"#")
     print("###"+state["A0"]+"#"+state["B0"]+"#"+state["C0"]+"#"+state["D0"]+"###")
@@ -161,7 +160,6 @@ def visualise(state):
     print("  #"+state["A2"]+"#"+state["B2"]+"#"+state["C2"]+"#"+state["D2"]+"#")
     print("  #"+state["A3"]+"#"+state["B3"]+"#"+state["C3"]+"#"+state["D3"]+"#")
     print("  #########")
-    print("Energy usage:", energy)
     print()
 
 def isComplete(state):
@@ -219,6 +217,11 @@ def checkLegal(s, f, state):
     if (s.startswith("A") or s.startswith("B") or s.startswith("C") or s.startswith("D")) and f.startswith("H"):
         if blocked(s, f, state):
             return False
+    # am I in a hall location, trying to move to my column, is there anything in the way? (already prevented H to H moves)
+    if s.startswith("H"):
+        print("try hallblocked for: ", s, f)
+        if hallBlocked(s,f,state):
+            return False
     # if I'm an A and I'm in the A column and there is nothing below me that's not an A, stay put
     if s.startswith("A") and state[s] == "A" and state["A0"] == "A" and (state["A1"] == "A" or state["A1"] == ".") and (state["A2"] == "A" or state["A2"] == ".") and (state["A3"] == "A" or state["A3"] == "."): return False
     if s.startswith("B") and state[s] == "B" and state["B0"] == "B" and (state["B1"] == "B" or state["B1"] == ".") and (state["B2"] == "B" or state["B2"] == ".") and (state["B3"] == "B" or state["B3"] == "."): return False
@@ -227,13 +230,36 @@ def checkLegal(s, f, state):
     # anything else is OK:
     return True
 
+def hallBlocked(s, f, state):
+    # like blocked() but starting with hallway places
+    assert(s.startswith("H"))
+    # end of hall blocked:
+    if s == "H0" and state["H1"] != ".": return True # H0 is blocked
+    if s == "H10" and state["H9"] != ".": return True # H10 is blocked
+    # if we're just above the room we're going into:
+    if (s == "H0" or s == "H1" or s == "H3") and f.startswith("A"): return False # OK
+    if (s == "H3" or s == "H5") and f.startswith("B"): return False # OK
+    if (s == "H5" or s == "H7") and f.startswith("C"): return False # OK
+    if (s == "H7" or s == "H9" or s == "H10") and f.startswith("D"): return False # OK
+    # cases where a clear hall is needed:
+    if (s == "H0" or s == "H1") and f.startswith("B") and state["H3"] != ".": return True
+    if (s == "H0" or s == "H1") and f.startswith("C") and (state["H3"] != "." or state["H5"] != "."): return True
+    if (s == "H0" or s == "H1") and f.startswith("D") and (state["H3"] != "." or state["H5"] != "." or state["H7"] != "."): return True # blocked
+    if s == "H3" and f.startswith("C") and state["H5"] != ".": return True # H5 blocked
+    if s == "H3" and f.startswith("D") and (state["H5"] != "." or state["H7"] != "."): return True # H5 or H7 blocked
+    if s == "H5" and f.startswith("A") and state["H3"] != ".": return True # H3 blocked
+    if s == "H5" and f.startswith("D") and state["H7"] != ".": return True # H7 blocked
+    if s == "H7" and f.startswith("A") and (state["H5"] != "." or state["H3"] != "."): return True # H3 or H5 blocked
+    if s == "H7" and f.startswith("B") and state["H5"] != ".": return True # H5 blocked
+    if (s == "H9" or s == "H10") and f.startswith("A") and (state["H7"] != "." or state["H5"] != "." or state["H3"] != "."): return True
+    if (s == "H9" or s == "H10") and f.startswith("B") and (state["H7"] != "." or state["H5"] != "."): return True
+    if (s == "H9" or s == "H10") and f.startswith("C") and state["H7"] != ".": return True # H7 blocked
+    return False # OK
+
 def blocked(s, f, state):
     # s will be a column and f will be a hallway place
     assert((s.startswith("A") or s.startswith("B") or s.startswith("C") or s.startswith("D")) and f.startswith("H"))
     if s.startswith("A"):
-        print("s:",s)
-        print("f:",f)
-        print(state)
         if f == "H0" and state["H1"] != ".": return True
         elif f == "H5" and state["H3"] != ".": return True
         elif f == "H7" and (state["H3"] != "." or state["H5"] != "."): return True
