@@ -219,7 +219,6 @@ def checkLegal(s, f, state):
             return False
     # am I in a hall location, trying to move to my column, is there anything in the way? (already prevented H to H moves)
     if s.startswith("H"):
-        print("try hallblocked for: ", s, f)
         if hallBlocked(s,f,state):
             return False
     # if I'm an A and I'm in the A column and there is nothing below me that's not an A, stay put
