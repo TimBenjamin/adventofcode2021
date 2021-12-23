@@ -293,7 +293,7 @@ def blocked(s, f, state):
     return False
 
 def playGame(moves, energy, state):
-    global winningGames, places, minEnergy
+    global winningGames, places, minEnergy, steps
     moved = False
     for s in places: # s = start, where we are moving from
         for f in places: # f = finish, where we are moving to
@@ -304,6 +304,8 @@ def playGame(moves, energy, state):
             #     return False
             if checkLegal(s, f, state):
                 moved = True
+                steps += 1
+                previousState = state.copy()
                 moves, energy = doMove(s, f, moves, energy, state)
                 #visualise(state)
                 if isComplete(state):
@@ -315,13 +317,25 @@ def playGame(moves, energy, state):
                     if energy < minEnergy:
                         minEnergy = energy
                     return True
-                return playGame(moves, energy, state)
+                else:
+                    result = playGame(moves, energy, state)
+                    if result:
+                        return True
+                    else:
+                        state = previousState
+                        continue
         #print(s + "(" + state[s] + ") cannot move")
     
     if not moved:
         # game finished but was not complete
-        visualise(state)
-        print("That game ended in gridlock! try another")
+        #visualise(state)
+        #print("That game ended in gridlock after "+str(steps)+" steps! try another")
+        steps = 0
+        return False
+    else:
+        #print("what is this condition then?")
+        #visualise(state)
+        steps = 0
         return False
 
 winningGames = []
@@ -329,6 +343,7 @@ numGames = 0
 minEnergy = 1000000
 moves = []
 energy = 0
+steps = 0
 state = getInitialState()
 for s in places: # s = start, where we are moving from
     for f in places: # f = finish, where we are moving to
@@ -344,7 +359,21 @@ for s in places: # s = start, where we are moving from
             #print("s f not legal:",s,f)
             pass
 print(minEnergy)
-    
+
+# starting a game with conditions I know lead to a win
+# s = D0 / f = H0
+# state = getInitialState()
+# s = "D0"
+# f = "H0"
+# if checkLegal(s, f, state):
+#     print("starting a game with s: "+s+" and f: "+f)
+#     moves, energy = doMove(s, f, moves, energy, state)
+#     result = playGame(moves, energy, state)
+#     numGames += 1
+#     print("result of game " + str(numGames)+" was:", result)
+# else:
+#     #print("s f not legal:",s,f)
+#     pass
 
 
                 
