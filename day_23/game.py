@@ -294,7 +294,6 @@ def blocked(s, f, state):
 
 def playGame(moves, energy, state):
     global winningGames, places, minEnergy
-    # BUG - this just runs the same game over and over...
     moved = False
     for s in places: # s = start, where we are moving from
         for f in places: # f = finish, where we are moving to
@@ -324,7 +323,6 @@ def playGame(moves, energy, state):
         visualise(state)
         print("That game ended in gridlock! try another")
         return False
-    print("end of for, but still in while")
 
 winningGames = []
 numGames = 0
